@@ -8,7 +8,7 @@ import (
 )
 
 type Task interface {
-	Evaluate()
+	Run()
 	Interval() string
 }
 
@@ -31,11 +31,11 @@ func Schedule(tasks []Task) []*time.Ticker {
 }
 
 func schedule(t *time.Ticker, q chan bool, task Task) {
-	task.Evaluate()
+	task.Run()
 	for {
 		select {
 		case <-t.C:
-			task.Evaluate()
+			task.Run()
 		case <-q:
 			t.Stop()
 			return

@@ -12,7 +12,7 @@ type Status struct {
 	Intervalo string `json:"Interval"`
 }
 
-func (t Status) Evaluate() {
+func (t Status) Run() {
 	log.Printf("TODO")
 }
 
@@ -29,6 +29,14 @@ func Monitor(filepath string) error {
 	}
 	var s []Status
 	err = loadStatus(body, &s)
-	scheduler.Schedule(s)
+	scheduler.Schedule(tasks(s))
 	return err
+}
+
+func tasks(s []Status) []scheduler.Task {
+	vals := make([]scheduler.Task, len(s))
+	for i, v := range s {
+		vals[i] = v
+	}
+	return vals
 }
