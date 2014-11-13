@@ -16,18 +16,18 @@ type Status struct {
 func (s Status) Run() {
 	body, _ := s.GetResource()
 
-	var r Resource
+	var res Resource
 
 	switch s.Stype {
 	case "extended":
-		r = Extended{}
+		res = new(Extended)
 	case "jkstatus":
 	}
 
-	mp := FindPattern(r, body)
-	r.Load(mp)
+	mp := FindPattern(res, body)
+	res.Load(mp)
 
-	log.Println(r)
+	log.Printf("%v", res)
 }
 
 func (t Status) Interval() string {
