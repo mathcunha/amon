@@ -4,6 +4,7 @@ import (
 	"github.com/mathcunha/amon/scheduler"
 	"io/ioutil"
 	"log"
+	"sync"
 )
 
 type Status struct {
@@ -12,25 +13,30 @@ type Status struct {
 	Intervalo string `json:"Interval"`
 }
 
-func (t Status) Run() {
-	log.Printf("TODO")
+func (s Status) Run() {
+	body, _ := s.GetResource()
+
+	log.Println(body)
 }
 
 func (t Status) Interval() string {
 	return t.Intervalo
 }
 
-func Monitor(filepath string) error {
+func Monitor(filepath string) (sync.WaitGroup, error) {
 	body, err := ioutil.ReadFile(filepath)
+	var wg sync.WaitGroup
 
 	if err != nil {
 		log.Printf("error loading config file (%v)", err)
-		return err
+		return wg, err
 	}
 	var s []Status
 	err = loadStatus(body, &s)
-	scheduler.Schedule(tasks(s))
-	return err
+	routines := scheduler.Schedule(tasks(s))
+	wg.Add(len(routines))
+
+	return wg, err
 }
 
 func tasks(s []Status) []scheduler.Task {
