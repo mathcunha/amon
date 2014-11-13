@@ -1,10 +1,13 @@
 package amon
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestMonitor(t *testing.T) {
-	err := Monitor("/vagrant/config.json")
+	wg, err := Monitor("/vagrant/config.json")
 	if err != nil {
 		t.Errorf("config error")
 	}
+	wg.Wait()
 }

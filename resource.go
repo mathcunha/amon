@@ -4,9 +4,15 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"regexp"
 )
 
-func (s Status) GetResource() (string, error) {
+type Resource interface {
+	Patterns() []*regexp.Regexp
+	Load(*map[string]string)
+}
+
+func (s Status) GetResource() ([]byte, error) {
 	url := s.Url
 	res, err := http.Get(url)
 	if err != nil {
@@ -20,5 +26,5 @@ func (s Status) GetResource() (string, error) {
 		log.Printf("error reading resource %v body - %v", url, err)
 	}
 
-	return string(data[:]), nil
+	return data, nil
 }
