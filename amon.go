@@ -24,8 +24,7 @@ func (s Status) Run() {
 	case "jkstatus":
 	}
 
-	mp := FindPattern(res, body)
-	res.Load(mp)
+	LoadAttributes(res, body)
 
 	log.Printf("%v", res)
 }

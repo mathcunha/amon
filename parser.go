@@ -12,14 +12,14 @@ func loadStatus(data []byte, status *[]Status) error {
 	return json.NewDecoder(bytes.NewBuffer(data)).Decode(status)
 }
 
-func FindPattern(r Resource, body []byte) *map[string]string {
+func LoadAttributes(r Resource, body []byte) {
 	mp := map[string]string{}
 
 	for _, re := range r.Patterns() {
 		findPattern(re, body, &mp)
 	}
 
-	return &mp
+	r.Load(&mp)
 }
 
 func findPattern(re *regexp.Regexp, body []byte, mp *map[string]string) {
@@ -37,7 +37,6 @@ func ParseFloat(value string) float32 {
 	f_value, err := strconv.ParseFloat(value, 32)
 	if err != nil {
 		log.Printf("error parsing (%v) to float32 (%v)\n", value, err)
-	} else {
 		return -1
 	}
 	return float32(f_value)
@@ -47,7 +46,6 @@ func ParseInt(value string) int32 {
 	i_value, err := strconv.ParseInt(value, 10, 32)
 	if err != nil {
 		log.Printf("error parsing (%v) to int32 (%v)\n", value, err)
-	} else {
 		return -1
 	}
 	return int32(i_value)
