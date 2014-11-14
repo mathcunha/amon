@@ -5,12 +5,20 @@ import (
 	"io/ioutil"
 	"log"
 	"sync"
+	"time"
 )
 
 type Status struct {
 	Stype     string `json:"type"`
 	Url       string
 	Intervalo string `json:"Interval"`
+}
+
+type Event struct {
+	Source    string      `json:"@source"`
+	Tags      []string    `json:"@tags"`
+	Timestamp string      `json:"@timestamp"`
+	Field     interface{} `json:"@fields"`
 }
 
 func (s Status) Run() {
@@ -26,8 +34,11 @@ func (s Status) Run() {
 	}
 
 	LoadAttributes(res, body)
-
-	log.Printf("%v", res)
+	event := new(Event)
+	event.Source = s.Url
+	event.Tags = []string{s.Stype}
+	event.Timestamp = time.Now().Format("2006-01-02T15:04:05.000Z0700")
+	PostEvents(res.BuildEvents(event))
 }
 
 func (t Status) Interval() string {

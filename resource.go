@@ -1,15 +1,19 @@
 package amon
 
 import (
+	"bytes"
+	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"regexp"
+	"time"
 )
 
 type Resource interface {
 	Patterns() []*regexp.Regexp
 	Load(*map[string]string)
+	BuildEvents(e *Event) *[]Event
 }
 
 func (s Status) GetResource() ([]byte, error) {
@@ -27,4 +31,15 @@ func (s Status) GetResource() ([]byte, error) {
 	}
 
 	return data, nil
+}
+
+func PostEvents(events *[]Event) {
+	timestamp := time.Now().Format("2006.01.02")
+	for _, value := range *events {
+		log.Printf("posting alert to %v", value)
+		var postData []byte
+		w := bytes.NewBuffer(postData)
+		json.NewEncoder(w).Encode(value)
+		http.Post("http://127.0.0.1:9200/logstash-"+timestamp+"/amon/", "application/json", w)
+	}
 }
