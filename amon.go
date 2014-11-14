@@ -21,7 +21,8 @@ func (s Status) Run() {
 	switch s.Stype {
 	case "extended":
 		res = new(Extended)
-	case "jkstatus":
+	case "jk":
+		res = new(Jk)
 	}
 
 	LoadAttributes(res, body)
