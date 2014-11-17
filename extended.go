@@ -2,6 +2,7 @@ package amon
 
 import (
 	"regexp"
+	"strings"
 )
 
 type Extended struct {
@@ -13,6 +14,17 @@ type Extended struct {
 	IdleWorkers int32
 	ScoreBoard  string
 	HostName    string
+	Waiting     int
+	Starting    int
+	Reading     int
+	Replying    int
+	Keepalive   int
+	Dns         int
+	Closing     int
+	Logging     int
+	Grace       int
+	Idle        int
+	Available   int
 }
 
 func (e *Extended) BuildEvents(event *Event) *[]Event {
@@ -35,4 +47,15 @@ func (e *Extended) Load(mp *map[string]string) {
 	e.BusyWorkers = ParseInt(mapa["idle_workers"])
 	e.ScoreBoard = mapa["score_board"]
 	e.HostName = mapa["host_name"]
+	e.Waiting = strings.Count(e.ScoreBoard, "_")
+	e.Starting = strings.Count(e.ScoreBoard, "S")
+	e.Reading = strings.Count(e.ScoreBoard, "R")
+	e.Replying = strings.Count(e.ScoreBoard, "W")
+	e.Keepalive = strings.Count(e.ScoreBoard, "K")
+	e.Dns = strings.Count(e.ScoreBoard, "D")
+	e.Closing = strings.Count(e.ScoreBoard, "C")
+	e.Logging = strings.Count(e.ScoreBoard, "L")
+	e.Grace = strings.Count(e.ScoreBoard, "G")
+	e.Idle = strings.Count(e.ScoreBoard, "I")
+	e.Available = strings.Count(e.ScoreBoard, ".")
 }

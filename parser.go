@@ -9,8 +9,8 @@ import (
 	"strconv"
 )
 
-func loadStatus(data []byte, status *[]Status) error {
-	return json.NewDecoder(bytes.NewBuffer(data)).Decode(status)
+func loadStatus(data []byte, config *Config) error {
+	return json.NewDecoder(bytes.NewBuffer(data)).Decode(config)
 }
 
 func LoadAttributes(r Resource, body []byte) {

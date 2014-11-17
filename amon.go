@@ -8,10 +8,16 @@ import (
 	"time"
 )
 
+type Config struct {
+	Elasticsearch string    `json:"elasticsearch"`
+	Status        []*Status `json:"status"`
+}
+
 type Status struct {
 	Stype     string `json:"type"`
 	Url       string
 	Intervalo string `json:"Interval"`
+	Config    *Config
 }
 
 type Event struct {
@@ -21,7 +27,7 @@ type Event struct {
 	Field     interface{} `json:"@fields"`
 }
 
-func (s Status) Run() {
+func (s *Status) Run() {
 	body, _ := s.GetResource()
 
 	var res Resource
@@ -38,7 +44,7 @@ func (s Status) Run() {
 	event.Source = s.Url
 	event.Tags = []string{s.Stype}
 	event.Timestamp = time.Now().Format("2006-01-02T15:04:05.000Z0700")
-	PostEvents(res.BuildEvents(event))
+	PostEvents(s.Config.Elasticsearch, res.BuildEvents(event))
 }
 
 func (t Status) Interval() string {
@@ -53,18 +59,20 @@ func Monitor(filepath string) (sync.WaitGroup, error) {
 		log.Printf("error loading config file (%v)", err)
 		return wg, err
 	}
-	var s []Status
-	err = loadStatus(body, &s)
-	routines := scheduler.Schedule(tasks(s))
+	var c Config
+	err = loadStatus(body, &c)
+	routines := scheduler.Schedule(tasks(&c))
 	wg.Add(len(routines))
 
 	return wg, err
 }
 
-func tasks(s []Status) []scheduler.Task {
+func tasks(c *Config) []scheduler.Task {
+	s := c.Status
 	vals := make([]scheduler.Task, len(s))
-	for i, v := range s {
-		vals[i] = v
+	for i := 0; i < len(s); i++ {
+		vals[i] = s[i]
+		s[i].Config = c
 	}
 	return vals
 }

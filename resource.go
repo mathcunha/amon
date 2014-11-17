@@ -33,13 +33,12 @@ func (s Status) GetResource() ([]byte, error) {
 	return data, nil
 }
 
-func PostEvents(events *[]Event) {
+func PostEvents(url string, events *[]Event) {
 	timestamp := time.Now().Format("2006.01.02")
 	for _, value := range *events {
-		log.Printf("posting alert to %v", value)
 		var postData []byte
 		w := bytes.NewBuffer(postData)
 		json.NewEncoder(w).Encode(value)
-		http.Post("http://127.0.0.1:9200/logstash-"+timestamp+"/amon/", "application/json", w)
+		http.Post(url+"/logstash-"+timestamp+"/amon/", "application/json", w)
 	}
 }
