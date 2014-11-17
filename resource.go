@@ -39,6 +39,7 @@ func PostEvents(url string, events *[]Event) {
 		var postData []byte
 		w := bytes.NewBuffer(postData)
 		json.NewEncoder(w).Encode(value)
-		http.Post(url+"/logstash-"+timestamp+"/amon/", "application/json", w)
+		resp, _ := http.Post(url+"/logstash-"+timestamp+"/amon/", "application/json", w)
+		resp.Body.Close()
 	}
 }

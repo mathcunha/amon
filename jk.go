@@ -11,7 +11,7 @@ type Jk struct {
 }
 
 type Worker struct {
-	Name           string
+	Name           string `json:"instance"`
 	HostName       string
 	Status         string
 	State          string
