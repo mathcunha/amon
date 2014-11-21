@@ -21,6 +21,7 @@ func (s Status) GetResource() ([]byte, error) {
 	res, err := http.Get(url)
 	if err != nil {
 		log.Printf("unable do reach the url %v", err)
+		return []byte{}, err
 	}
 	defer res.Body.Close()
 
