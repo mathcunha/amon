@@ -12,20 +12,28 @@ type Task interface {
 	Interval() string
 }
 
+func ScheduleOne(t Task) (*time.Ticker, chan bool) {
+	log.Printf("tasks %v", t)
+	duration := getInterval(t.Interval())
+
+	if duration > 0 {
+		ticker := time.NewTicker(duration)
+		control := make(chan bool)
+		go schedule(ticker, control, t)
+		return ticker, control
+	}
+	return nil, nil
+}
+
 func Schedule(tasks []Task) []*time.Ticker {
 	length := len(tasks)
 	tickers := make([]*time.Ticker, length, length)
 	controls := make([]chan bool, length, length)
 
 	for i, t := range tasks {
-		log.Printf("tasks %v", t)
-		duration := getInterval(t.Interval())
-
-		if duration > 0 {
-			tickers[i] = time.NewTicker(duration)
-			controls[i] = make(chan bool)
-			go schedule(tickers[i], controls[i], t)
-		}
+		ticker, control := ScheduleOne(t)
+		tickers[i] = ticker
+		controls[i] = control
 	}
 	return tickers
 }
