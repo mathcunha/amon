@@ -62,3 +62,12 @@ func ParseInt(value string) int32 {
 	}
 	return int32(i_value)
 }
+
+func ParseInt64(value string) int64 {
+        i_value, err := strconv.ParseInt(value, 10, 64)
+        if err != nil {
+                log.Printf("error parsing (%v) to int64 (%v)\n", value, err)
+                return -1
+        }
+        return int64(i_value)
+}
